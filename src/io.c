@@ -25,14 +25,15 @@ void init_io(void){
 
 int check_battery(void){
 	// Read ADC for battery
-	// 4.0V: 1655, 2.5V: 1034
-	// 1530-     : 5
-	// 1406-1529 : 4
-	// 1282-1405 : 3
-	// 1158-1281 : 2
-	// 1034-1157 : 1
-	//     -1033 : 0
-	int b=(adc_read()-910)/124;
+	// 4.5V: 1862, 3.6V: 1489
+	// 
+	//     -1864 : 5
+	// 1715-1789 : 4
+	// 1640-1714 : 3
+	// 1565-1639 : 2
+	// 1490-1564 : 1
+	//     -1489 : 0
+	int b=(adc_read()-1415)/75;
 	if (5<b) b=5;
 	if (b<0) b=0;
 	return b;
@@ -84,12 +85,12 @@ t_data* get_t_data(void){
 	i2c_read_blocking(IO_I2C_CH,0x1f,d,2,false);
 	i=((d[0]&0xf)<<8)|d[1];
 	i=10*i/15;
-	Td=((float)i)/10+0.1; // Note "+0.1" here depends on each MCP9808 chip characteristic
+	Td=((float)i)/10+0.1;
 	// Bulb 2 shows 0.1 degree higher temperature
 	i2c_read_blocking(IO_I2C_CH,0x1b,d,2,false);
 	i=((d[0]&0xf)<<8)|d[1];
 	i=10*i/15;
-	Tw=((float)i)/10-0.1; // Note "-0.1" here depends on each MCP9808 chip characteristic
+	Tw=((float)i)/10-0.1;
 	// Calculate humidity
 	tdat.humidity=humidity(Td,Tw);
 	// Set temperature
